@@ -294,6 +294,7 @@
   .bundle-items .item-row { display: flex; align-items: center; gap: 9px; }
   .bundle-items .item-row .tick { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 10px; flex: none; }
   .bundle-items .item-row span.txt { font-size: 13.5px; }
+  .bundle-items .item-row.highlight span.txt { font-weight: 700; }
   .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 20px; padding-top: 16px; border-top: 1px solid rgba(39,34,26,0.1); }
   .specs-grid .k { font-size: 11px; letter-spacing: .6px; text-transform: uppercase; color: rgba(39,34,26,0.45); font-weight: 600; }
   .specs-grid .v { font-size: 13.5px; font-weight: 600; }
@@ -1195,8 +1196,9 @@ PRODUCTS.forEach(function (p, pIndex) {
     var price = p.basePrice + BUNDLE_TIERS[tierIndex].delta;
     priceEl.textContent = '€' + price.toLocaleString('en-US');
     tabsEl.querySelectorAll('button').forEach(function (b, i) { b.classList.toggle('active', i === tierIndex); });
-    itemsEl.innerHTML = BUNDLE_TIERS[tierIndex].items.map(function (it) {
-      return '<div class="item-row"><span class="tick">&#10003;</span><span class="txt">' + esc(it) + '</span></div>';
+    itemsEl.innerHTML = BUNDLE_TIERS[tierIndex].items.map(function (it, idx) {
+      var cls = idx < 2 ? ' highlight' : '';
+      return '<div class="item-row' + cls + '"><span class="tick">&#10003;</span><span class="txt">' + esc(it) + '</span></div>';
     }).join('');
     currentTierIndexes[pIndex] = tierIndex;
   }
