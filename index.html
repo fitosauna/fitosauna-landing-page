@@ -552,6 +552,12 @@
     #reviews-scroll .t-card .t-photo-d { display: none; }
     #reviews-scroll .t-card .t-photo-m { display: block; }
   }
+@media (min-width: 781px) and (max-width: 1100px) {
+  .video-overview { padding-left: clamp(24px,5vw,72px); padding-right: clamp(24px,5vw,72px); gap: clamp(40px,5vw,72px); align-items: stretch; }
+  .video-overview .copy { display: flex; flex-direction: column; height: 100%; }
+  .video-overview h2 { margin-top: -8px; }
+  .video-overview .video-btn { padding: 10px 22px; font-size: 13.5px; margin-top: auto; align-self: flex-start; }
+}
 </style>
 </head>
 <body>
