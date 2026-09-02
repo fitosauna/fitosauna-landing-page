@@ -349,12 +349,10 @@
   footer.site-footer .foot-logo svg { height: 15px; width: auto; display: block; }
   footer.site-footer .copyright { max-width: 1200px; margin: 24px auto 0; font-size: 12px; color: rgba(39,34,26,0.45); }
 
-  @media (min-width: 781px) and (max-width: 1100px) {
+  @media (min-width: 600px) and (max-width: 1100px) {
     .hero video { display: none; }
-    .hero { background: #EFE9DD center 5% / cover no-repeat url('assets/hero-product-photo-flipped.jpg'); }
-  }
-  @media (min-width: 600px) and (max-width: 780px) {
-    .hero { background: #EFE9DD center top / cover no-repeat url('assets/hero-product-photo-tablet.jpg'); }
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero { background: #EFE9DD center top / cover no-repeat url('assets/hero-product-photo.jpg'); }
   }
 
   @media (max-width: 780px) {
