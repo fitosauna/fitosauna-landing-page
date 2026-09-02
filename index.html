@@ -213,9 +213,8 @@
   }
 
   /* VIDEO OVERVIEW */
-  .video-overview { max-width: 1320px; margin: 0 auto; padding: clamp(56px,7vw,96px) clamp(20px,4vw,56px); display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: clamp(20px,3vw,36px); align-items: start; }
-  .video-overview .copy { max-width: 52ch; }
-  .video-overview .video-frame { margin-top: 32px; }
+  .video-overview { max-width: 1320px; margin: 0 auto; padding: clamp(56px,7vw,96px) clamp(24px,5vw,72px); display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: clamp(40px,5vw,72px); align-items: stretch; }
+  .video-overview .copy { max-width: 52ch; display: flex; flex-direction: column; height: 100%; }
   .video-overview h2 { font-size: clamp(26px,3.4vw,38px); line-height: 1.18; margin: 0 0 16px; }
   .video-overview p { font-size: 15.5px; line-height: 1.6; color: rgba(39,34,26,0.6); margin: 0 0 26px; }
   .video-frame { position: relative; aspect-ratio: 16/9; min-width: 100%; transform: scale(1.12); transform-origin: center; border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(39,34,26,.18); }
@@ -696,7 +695,7 @@
     <div class="copy">
       <h2>Take a Look Inside Your Future Sauna</h2>
       <p>A 2-minute walkthrough - see how it works and hear why 1,000+ customers made the switch.</p>
-      <a href="#lead-form" class="btn desktop-only" style="padding:12px 24px;font-size:14px;" onclick="scrollToLead(event)">Claim My Offer</a>
+      <a href="#lead-form" class="btn desktop-only" style="padding:10px 22px;font-size:13.5px;margin-top:auto;align-self:flex-start;" onclick="scrollToLead(event)">Claim My Offer</a>
     </div>
     <div class="video-frame">
       <wistia-player media-id="tkq2wsc8o0" aspect="1.7777777777777777" player-color="05403A"></wistia-player>
