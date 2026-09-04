@@ -1259,8 +1259,8 @@ PRODUCTS.forEach(function (p, pIndex) {
       finish();
     }
   }
-  function render(tierIndex) {
-    renderPhoto(tierIndex, 0);
+  function render(tierIndex, dir) {
+    renderPhoto(tierIndex, 0, dir);
     var price = p.basePrice + BUNDLE_TIERS[tierIndex].delta;
     priceEl.textContent = '€' + price.toLocaleString('en-US');
     tabsEl.querySelectorAll('button').forEach(function (b, i) { b.classList.toggle('active', i === tierIndex); });
@@ -1298,7 +1298,7 @@ function cycleTier(pIndex, dir) {
     return;
   }
   var next = (tierIndex + dir + n) % n;
-  productsGrid.children[pIndex].render(next);
+  productsGrid.children[pIndex].render(next, dir);
 }
 
 // ---- Testimonials ----
