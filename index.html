@@ -1033,6 +1033,9 @@ function submitLead(e, form) {
   var contactEl = card.querySelector('.lead-contact');
   if (contactEl) contactEl.textContent = email || fullPhone;
   card.classList.add('submitted');
+  if (window.dataLayer) {
+    dataLayer.push({ event: 'specialoffer_form_submit' });
+  }
 }
 
 // ---- Tap-to-play videos (no native controls) ----
