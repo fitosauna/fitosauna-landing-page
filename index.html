@@ -1218,6 +1218,13 @@ PRODUCTS.forEach(function (p, pIndex) {
   var priceEl = card.querySelector('.price');
   var tabsEl = card.querySelector('.bundle-tabs');
   var itemsEl = card.querySelector('.bundle-items');
+  var photoEl = card.querySelector('.photo');
+  var touchStartX = 0;
+  photoEl.addEventListener('touchstart', function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+  photoEl.addEventListener('touchend', function (e) {
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) { cycleTier(pIndex, dx < 0 ? 1 : -1); }
+  }, { passive: true });
 
   function renderPhoto(tierIndex, subIndex) {
     var photos = p.images[tierIndex];
