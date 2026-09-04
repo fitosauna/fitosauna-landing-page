@@ -1226,14 +1226,35 @@ PRODUCTS.forEach(function (p, pIndex) {
     if (Math.abs(dx) > 40) { cycleTier(pIndex, dx < 0 ? 1 : -1); }
   }, { passive: true });
 
-  function renderPhoto(tierIndex, subIndex) {
+  function renderPhoto(tierIndex, subIndex, dir) {
     var photos = p.images[tierIndex];
-    img.src = photos[subIndex];
-    img.classList.toggle('cover-fit', !!p.coverFit[tierIndex]);
-    currentSubIndexes[pIndex] = subIndex;
-    dotsEl.innerHTML = photos.length > 1 ? photos.map(function (_, i) {
-      return '<button type="button" class="' + (i === subIndex ? 'active' : '') + '" aria-label="Photo ' + (i + 1) + '" onclick="event.stopPropagation(); setProductPhoto(' + pIndex + ', ' + i + ')"></button>';
-    }).join('') : '';
+    var newSrc = photos[subIndex];
+    var finish = function () {
+      currentSubIndexes[pIndex] = subIndex;
+      dotsEl.innerHTML = photos.length > 1 ? photos.map(function (_, i) {
+        return '<button type="button" class="' + (i === subIndex ? 'active' : '') + '" aria-label="Photo ' + (i + 1) + '" onclick="event.stopPropagation(); setProductPhoto(' + pIndex + ', ' + i + ')"></button>';
+      }).join('') : '';
+    };
+    if (dir) {
+      img.style.transition = 'transform 0.22s ease-in, opacity 0.22s ease-in';
+      img.style.transform = 'translateX(' + (dir > 0 ? '-25%' : '25%') + ')';
+      img.style.opacity = '0';
+      setTimeout(function () {
+        img.src = newSrc;
+        img.classList.toggle('cover-fit', !!p.coverFit[tierIndex]);
+        img.style.transition = 'none';
+        img.style.transform = 'translateX(' + (dir > 0 ? '25%' : '-25%') + ')';
+        void img.offsetWidth;
+        img.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
+        img.style.transform = 'translateX(0)';
+        img.style.opacity = '1';
+        finish();
+      }, 220);
+    } else {
+      img.src = newSrc;
+      img.classList.toggle('cover-fit', !!p.coverFit[tierIndex]);
+      finish();
+    }
   }
   function render(tierIndex) {
     renderPhoto(tierIndex, 0);
@@ -1269,8 +1290,8 @@ function cycleTier(pIndex, dir) {
   var photos = p.images[tierIndex];
   var subIndex = currentSubIndexes[pIndex];
   var nextSub = subIndex + dir;
-  if (nextSub >= 0 && nextSub < photos.length) {
-    productsGrid.children[pIndex]._renderPhoto(tierIndex, nextSub);
+   if (nextSub >= 0 && nextSub < photos.length) {
+    productsGrid.children[pIndex]._renderPhoto(tierIndex, nextSub, dir);
     return;
   }
   var next = (tierIndex + dir + n) % n;
