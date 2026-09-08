@@ -806,7 +806,7 @@
       <h2>Handcrafted From Thermo Aspen Wood</h2>
     </div>
     <div style="margin-bottom:28px;padding:14px 20px;background:rgba(5,64,58,0.1);border:1px solid rgba(5,64,58,0.25);border-radius:12px;text-align:center;font-size:14.5px;font-weight:600;color:var(--accent-dark);">
-      Pre-season warehouse sale &ndash; last <span class="stock-count">7</span> saunas available with <span style="color:var(--accent-dark);font-weight:800;text-transform:uppercase;">free shipping</span> and a <span style="color:var(--accent-dark);font-weight:800;text-transform:uppercase;">complimentary steam generator</span> &ndash; don&rsquo;t miss out!
+            Pre-season warehouse sale &ndash; last <span class="stock-count">7</span> saunas available with <span style="color:var(--accent-dark);font-weight:800;text-transform:uppercase;">free shipping</span> and a <span style="color:var(--accent-dark);font-weight:800;text-transform:uppercase;">complimentary steam generator</span>.
     </div>
         <div class="products-grid" id="products-grid"></div>
     <div class="products-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Claim now to secure the current offer &mdash; no payment required</span></div>
@@ -1301,7 +1301,7 @@ PRODUCTS.forEach(function (p, pIndex) {
     var freeItems = tier.items.slice(0, 2);
     var additionalItems = tier.items.slice(2);
     function itemRow(it) { return '<div class="item-row"><span class="tick">&#10003;</span><span class="txt">' + esc(it) + '</span></div>'; }
-    var boxesHtml = '<div class="bundle-box free"><div class="box-head">' + ICON_GIFT + '<span>Free with every Fitosauna</span></div><div class="item-list">' + freeItems.map(itemRow).join('') + '</div></div>';
+    var boxesHtml = '<div class="bundle-box free"><div class="box-head">' + ICON_GIFT + '<span>Free with every sauna</span></div><div class="item-list">' + freeItems.map(itemRow).join('') + '</div></div>';
     if (additionalItems.length) {
       boxesHtml += '<div class="bundle-box additional"><div class="box-head">' + ICON_PACKAGE + '<span>Additional items in ' + esc(tier.name) + ' bundle</span></div><div class="item-list">' + additionalItems.map(itemRow).join('') + '</div></div>';
     }
