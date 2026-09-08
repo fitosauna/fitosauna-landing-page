@@ -293,11 +293,24 @@
   .bundle-tabs { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; padding: 4px; background: var(--surface); border-radius: 10px; margin-bottom: 16px; }
   .bundle-tabs button { border: none; cursor: pointer; padding: 9px 6px; border-radius: 7px; font-family: 'Archivo', sans-serif; font-size: 12.5px; font-weight: 700; background: transparent; color: #27221A; }
   .bundle-tabs button.active { background: var(--accent); color: var(--cream); }
-  .bundle-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-  .bundle-items .item-row { display: flex; align-items: center; gap: 9px; }
-  .bundle-items .item-row .tick { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 10px; flex: none; }
-  .bundle-items .item-row span.txt { font-size: 13.5px; }
-  .bundle-items .item-row.highlight span.txt { font-weight: 700; }
+    .bundle-items { margin-bottom: 20px; }
+  .bundle-box { border-radius: 12px; padding: 16px 18px; }
+  .bundle-box + .bundle-box { margin-top: 10px; }
+  .bundle-box .box-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .bundle-box .box-head svg { width: 20px; height: 20px; flex: none; color: var(--accent-dark); }
+  .bundle-box .box-head span { font-size: 11px; letter-spacing: .6px; text-transform: uppercase; font-weight: 700; color: var(--accent-dark); }
+  .bundle-box.free { background: rgba(5,64,58,0.08); }
+  .bundle-box.additional { background: rgba(39,34,26,0.055); }
+  .bundle-box .item-list { display: flex; flex-direction: column; gap: 10px; }
+  .bundle-box.additional .item-list { flex-direction: row; flex-wrap: wrap; gap: 10px 22px; }
+  .bundle-box .item-row { display: flex; align-items: center; gap: 9px; }
+  .bundle-box .item-row .tick { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 10px; flex: none; }
+  .bundle-box .item-row span.txt { font-size: 13.5px; }
+  .bundle-box.free .item-row span.txt { font-weight: 700; }
+  .bundle-box.additional .item-row span.txt { font-weight: 600; }
+  @media (max-width: 780px) {
+    .bundle-box.additional .item-list { gap: 8px 16px; }
+  }
   .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 20px; padding-top: 16px; border-top: 1px solid rgba(39,34,26,0.1); }
   .specs-grid .k { font-size: 11px; letter-spacing: .6px; text-transform: uppercase; color: rgba(39,34,26,0.45); font-weight: 600; }
   .specs-grid .v { font-size: 13.5px; font-weight: 600; }
@@ -917,6 +930,9 @@ var TRUST_POINTS = [
   { title: 'Meets EU safety standards', text: 'Compliant with EU health, safety, RoHS, and environmental requirements - verified, not just claimed.' }
 ];
 
+var ICON_GIFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>';
+var ICON_PACKAGE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>';
+
 var BUNDLE_TIERS = [
   { name: 'Essential', delta: 0, items: ['Free 4L 2kW steam generator', 'Free EU shipping'] },
   { name: 'Signature', delta: 120, items: ['Free 4L 2kW steam generator', 'Free EU shipping', '2 essential oils', 'Cleaning kit', 'Maintenance kit'] },
@@ -1270,11 +1286,16 @@ PRODUCTS.forEach(function (p, pIndex) {
     renderPhoto(tierIndex, 0, dir);
     var price = p.basePrice + BUNDLE_TIERS[tierIndex].delta;
     priceEl.textContent = '€' + price.toLocaleString('en-US');
-    tabsEl.querySelectorAll('button').forEach(function (b, i) { b.classList.toggle('active', i === tierIndex); });
-    itemsEl.innerHTML = BUNDLE_TIERS[tierIndex].items.map(function (it, idx) {
-      var cls = idx < 2 ? ' highlight' : '';
-      return '<div class="item-row' + cls + '"><span class="tick">&#10003;</span><span class="txt">' + esc(it) + '</span></div>';
-    }).join('');
+        tabsEl.querySelectorAll('button').forEach(function (b, i) { b.classList.toggle('active', i === tierIndex); });
+    var tier = BUNDLE_TIERS[tierIndex];
+    var freeItems = tier.items.slice(0, 2);
+    var additionalItems = tier.items.slice(2);
+    function itemRow(it) { return '<div class="item-row"><span class="tick">&#10003;</span><span class="txt">' + esc(it) + '</span></div>'; }
+    var boxesHtml = '<div class="bundle-box free"><div class="box-head">' + ICON_GIFT + '<span>Free with every Fitosauna</span></div><div class="item-list">' + freeItems.map(itemRow).join('') + '</div></div>';
+    if (additionalItems.length) {
+      boxesHtml += '<div class="bundle-box additional"><div class="box-head">' + ICON_PACKAGE + '<span>Additional items in ' + esc(tier.name) + ' bundle</span></div><div class="item-list">' + additionalItems.map(itemRow).join('') + '</div></div>';
+    }
+    itemsEl.innerHTML = boxesHtml;
     currentTierIndexes[pIndex] = tierIndex;
   }
   card.setAttribute('data-pindex', pIndex);
