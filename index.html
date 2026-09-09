@@ -1063,8 +1063,8 @@ function submitLead(e, form) {
   errorEl.style.display = 'none';
   var fullPhone = phoneCode + ' ' + phone;
   console.log('[Fitosauna lead]', { name: name, phone: fullPhone, email: email, timestamp: new Date().toISOString() });
-  var contactEl = card.querySelector('.lead-contact');
-  if (contactEl) contactEl.textContent = email || fullPhone;
+    var contactEl = card.querySelector('.lead-contact');
+  if (contactEl) contactEl.textContent = email + ' or ' + fullPhone;
   card.classList.add('submitted');
   if (window.dataLayer) {
     dataLayer.push({ event: 'specialoffer_form_submit' });
