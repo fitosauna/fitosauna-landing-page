@@ -684,7 +684,7 @@
                   <div class="hero-mobile-note">
         <strong>Only <span class="stock-count">7</span> saunas left in the current offer</strong>
                 <span>Takes less than a minute to secure your current offer while stock lasts.</span>
-        <span>By claiming this offer, I agree that SIA Fitosauna or its authorized distributor may contact me.</span>
+        <span>By claiming this offer, I agree that SIA Fitosauna or its authorized distributor may contact me by email and WhatsApp about my request. I can opt out anytime.</span>
       </div>
     </form>
   </div>
@@ -1052,6 +1052,20 @@ function scrollToLead(e) {
 }
 
 // ---- Lead forms (shared validation, used by both forms on the page) ----
+function submi// Phone -> E.164 (+, country code, digits only, no leading 0 after the country code)
+function toE164(countryDial, rawInput) {
+  var raw = (rawInput || '').trim();
+  if (raw.indexOf('00') === 0) raw = '+' + raw.slice(2);
+  if (raw.charAt(0) === '+') {
+    var d = raw.replace(/\D/g, '');
+    return /^\d{8,15}$/.test(d) ? '+' + d : null;
+  }
+  var cc = (countryDial || '').replace(/\D/g, '');
+  var local = raw.replace(/\D/g, '').replace(/^0+/, '');
+  var full = cc + local;
+  return /^\d{8,15}$/.test(full) && local.length >= 6 ? '+' + full : null;
+}
+
 function submitLead(e, form) {
   e.preventDefault();
   var card = form.closest('.lead-form-card');
