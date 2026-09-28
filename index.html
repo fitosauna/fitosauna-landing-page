@@ -1077,16 +1077,26 @@ function submitLead(e, form) {
   function showError(msg) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
   if (!name) return showError('Please enter your name.');
   var digits = phone.replace(/\D/g, '');
-  if (digits.length < 7) return showError('Please enter a valid phone number.');
+    var e164 = toE164(phoneCode, phone);
+  if (!e164) return showError('Please check your phone number.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Please enter a valid email address.');
   errorEl.style.display = 'none';
   var fullPhone = phoneCode + ' ' + phone;
   console.log('[Fitosauna lead]', { name: name, phone: fullPhone, email: email, timestamp: new Date().toISOString() });
   var contactEl = card.querySelector('.lead-contact');
   if (contactEl) contactEl.textContent = email + ' or ' + fullPhone;
-  card.classList.add('submitted');
+    card.classList.add('submitted');
+  // WhatsApp consent: server-side call (private key stays on the server); live domain only
+  if (window.location.hostname === 'special-offer.fitosauna.com') {
+    fetch('/api/whatsapp-consent.php', {
+      method: 'POST',
+      keepalive: true,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, phone: e164 })
+    }).catch(function (err) { console.error(err); });
+  }
     if (window.dataLayer) {
-    var metaPhone = (phoneCode + phone).replace(/[^\d+]/g, '');
+    var metaPhone = e164;
     dataLayer.push({
       event: 'specialoffer_form_submit',
       email: email,
