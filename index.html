@@ -531,6 +531,10 @@
       gap: 18px 10px;
     }
 
+    .trust-main-grid > .trust-logo-item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+
     .trust-logo-item {
       min-height: 82px;
       padding: 0 3px;
@@ -672,7 +676,7 @@
             </div>
             <input type="hidden" id="code-1" name="phone-code" value="+353">
           </div>
-          <input type="tel" id="phone-1" name="phone" placeholder="Your phone number">
+          <input type="tel" id="phone-1" name="phone" placeholder="Your phone number" required>
         </div>
       </div>
       <div>
@@ -684,7 +688,7 @@
                   <div class="hero-mobile-note">
         <strong>Only <span class="stock-count">7</span> saunas left in the current offer</strong>
                 <span>Takes less than a minute to secure your current offer while stock lasts.</span>
-        <span>By claiming this offer, I agree that SIA Fitosauna or its authorized distributor may contact me by email, phone and WhatsApp. I can opt out anytime.</span>
+         <span>By claiming this offer, I agree that SIA Fitosauna or its authorized distributor may contact me by email, phone and WhatsApp. I can opt out anytime.</span>
       </div>
     </form>
   </div>
@@ -706,9 +710,6 @@
       <div class="trust-main-grid">
         <div class="trust-logo-item">
           <img src="assets/trust-google-rating.png" alt="Google Rating - 5 stars">
-        </div>
-        <div class="trust-logo-item">
-          <img src="assets/trust-trustpilot.png" alt="Trustpilot - 5 stars">
         </div>
         <div class="trust-logo-item">
           <img src="assets/trust-fsc-wood.png" alt="FSC-certified wood - A-grade thermo aspen">
@@ -862,7 +863,7 @@
           </div>
           <input type="hidden" id="code-2" name="phone-code" value="+353">
         </div>
-        <input type="tel" id="phone-2" name="phone" placeholder="Your phone number">
+        <input type="tel" id="phone-2" name="phone" placeholder="Your phone number" required>
       </div></div>
       <div><label for="email-2">Email</label><input type="email" id="email-2" name="email" placeholder="your@email.com"></div>
       <div class="error"></div>
@@ -870,7 +871,7 @@
       <div class="hero-mobile-note">
         <strong>No payment. No obligation. Submit the form now to lock in your special offer.</strong>
                 <span>If you&rsquo;d like help before deciding, we&rsquo;re happy to answer your questions.</span>
-           <span>By claiming this offer, I agree that SIA Fitosauna or its authorized distributor may contact me by email, phone and WhatsApp. I can opt out anytime.</span>
+         <span>By claiming this offer, I agree that SIA Fitosauna or its authorized distributor may contact me by email, phone and WhatsApp. I can opt out anytime.</span>
       </div>
     </form>
   </div>
@@ -1052,7 +1053,7 @@ function scrollToLead(e) {
 }
 
 // ---- Lead forms (shared validation, used by both forms on the page) ----
-function submi// Phone -> E.164 (+, country code, digits only, no leading 0 after the country code)
+// Phone -> E.164 (+, country code, digits only, no leading 0 after the country code)
 function toE164(countryDial, rawInput) {
   var raw = (rawInput || '').trim();
   if (raw.indexOf('00') === 0) raw = '+' + raw.slice(2);
@@ -1076,7 +1077,7 @@ function submitLead(e, form) {
   var email = form.querySelector('[name=email]').value.trim();
   function showError(msg) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
   if (!name) return showError('Please enter your name.');
-  var digits = phone.replace(/\D/g, '');
+  if (!phone.replace(/\D/g, '')) return showError('Please enter your phone number.');
     var e164 = toE164(phoneCode, phone);
   if (!e164) return showError('Please check your phone number.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Please enter a valid email address.');
