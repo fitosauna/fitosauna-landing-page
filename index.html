@@ -100,6 +100,8 @@
   form.lead-form label { display: block; font-size: 13px; font-weight: 600; color: rgba(39,34,26,0.6); margin-bottom: 6px; }
   form.lead-form input { width: 100%; padding: 14px 15px; border: 1.5px solid rgba(39,34,26,0.12); border-radius: 10px; font-family: 'Archivo', sans-serif; font-size: 15px; color: #27221A; background: var(--card); outline: none; box-sizing: border-box; }
   form.lead-form input:focus { border-color: var(--accent); }
+  form.lead-form select { width: 100%; padding: 14px 15px; border: 1.5px solid rgba(39,34,26,0.12); border-radius: 10px; font-family: 'Archivo', sans-serif; font-size: 15px; color: #27221A; background: var(--card); outline: none; box-sizing: border-box; }
+  form.lead-form select:focus { border-color: var(--accent); }
   .phone-group { display: flex; gap: 8px; align-items: center; }
   .phone-group .code-dd { position: relative; flex: none; width: 108px; }
   .phone-group .code-dd .dd-toggle { width: 100%; display: flex; align-items: center; gap: 8px; padding: 14px 10px; border: 1.5px solid rgba(39,34,26,0.12); border-radius: 10px; background: var(--card); font-family: 'Archivo', sans-serif; font-size: 14px; color: #27221A; cursor: pointer; }
@@ -691,6 +693,27 @@
         <label for="email-1">Email</label>
         <input type="email" id="email-1" name="email" placeholder="your@email.com">
       </div>
+      <div>
+        <label for="call-time-1">Best time to call you</label>
+        <select id="call-time-1" name="call-time">
+          <option value="">Select (optional)</option>
+          <option value="Morning (9-12)">Morning (9-12)</option>
+          <option value="Afternoon (12-17)">Afternoon (12-17)</option>
+          <option value="Evening (17-20)">Evening (17-20)</option>
+          <option value="Any time">Any time</option>
+        </select>
+      </div>
+      <div>
+        <label for="install-1">Where will you install it?</label>
+        <select id="install-1" name="install-location">
+          <option value="">Select (optional)</option>
+          <option value="Bathroom">Bathroom</option>
+          <option value="Bedroom / living room">Bedroom / living room</option>
+          <option value="Spare room / home gym">Spare room / home gym</option>
+          <option value="Garage / outbuilding">Garage / outbuilding</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </div>
       <div class="error"></div>
       <button type="submit" class="submit-btn"><span class="desktop-copy">Claim My Offer</span><span class="mobile-copy">Claim My Offer</span></button>
                   <div class="hero-mobile-note">
@@ -874,6 +897,27 @@
         <input type="tel" id="phone-2" name="phone" placeholder="Your phone number" required>
       </div></div>
       <div><label for="email-2">Email</label><input type="email" id="email-2" name="email" placeholder="your@email.com"></div>
+      <div>
+        <label for="call-time-2">Best time to call you</label>
+        <select id="call-time-2" name="call-time">
+          <option value="">Select (optional)</option>
+          <option value="Morning (9-12)">Morning (9-12)</option>
+          <option value="Afternoon (12-17)">Afternoon (12-17)</option>
+          <option value="Evening (17-20)">Evening (17-20)</option>
+          <option value="Any time">Any time</option>
+        </select>
+      </div>
+      <div>
+        <label for="install-2">Where will you install it?</label>
+        <select id="install-2" name="install-location">
+          <option value="">Select (optional)</option>
+          <option value="Bathroom">Bathroom</option>
+          <option value="Bedroom / living room">Bedroom / living room</option>
+          <option value="Spare room / home gym">Spare room / home gym</option>
+          <option value="Garage / outbuilding">Garage / outbuilding</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </div>
       <div class="error"></div>
                   <button type="submit" class="submit-btn">Claim My Offer Now</button>
       <div class="hero-mobile-note">
@@ -1075,6 +1119,77 @@ function toE164(countryDial, rawInput) {
   return /^\d{8,15}$/.test(full) && local.length >= 6 ? '+' + full : null;
 }
 
+// ---- Engagement tracking: sent with the lead so sales can see how the visitor behaved ----
+var ENG = { activeMs: 0, maxScroll: 0, videoPct: 0 };
+(function () {
+  var lastAct = Date.now(), last = Date.now();
+  function act() { lastAct = Date.now(); }
+  ['scroll', 'mousemove', 'touchstart', 'keydown', 'click'].forEach(function (ev) {
+    window.addEventListener(ev, act, { passive: true });
+  });
+  function readScroll() {
+    var doc = document.documentElement;
+    var total = Math.max(doc.scrollHeight, document.body.scrollHeight) || 1;
+    var pct = Math.round(((window.pageYOffset || doc.scrollTop || 0) + window.innerHeight) / total * 100);
+    if (pct > ENG.maxScroll) ENG.maxScroll = Math.min(pct, 100);
+  }
+  function readVideo() {
+    var wp = document.querySelector('wistia-player');
+    var v = wp && wp.percentWatched;
+    if (typeof v === 'number' && !isNaN(v)) ENG.videoPct = Math.max(ENG.videoPct, Math.round(v * 100));
+  }
+  window.addEventListener('scroll', readScroll, { passive: true });
+  setInterval(function () {
+    var now = Date.now(), dt = Math.min(now - last, 2000);
+    last = now;
+    // active = tab visible and the visitor touched the page in the last 15 s (or the video is playing)
+    var wp = document.querySelector('wistia-player');
+    var playing = wp && wp.paused === false;
+    if (document.visibilityState === 'visible' && (now - lastAct < 15000 || playing)) ENG.activeMs += dt;
+    readScroll();
+    readVideo();
+  }, 1000);
+  var wp0 = document.querySelector('wistia-player');
+  if (wp0) wp0.addEventListener('percent-watched-change', readVideo);
+})();
+
+function readUtms() {
+  var out = {};
+  try {
+    var q = new URLSearchParams(window.location.search);
+    ['utm_campaign', 'utm_content'].forEach(function (k) { if (q.get(k)) out[k] = q.get(k); });
+    // keep first-touch UTMs if the visitor reloads the page without them
+    if (out.utm_campaign || out.utm_content) localStorage.setItem('fs_utm', JSON.stringify(out));
+    else out = JSON.parse(localStorage.getItem('fs_utm') || '{}');
+  } catch (err) {}
+  return out;
+}
+
+function newLeadId() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'l-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+// Returning visitor (after submitting the form): tell Klaviyo so the hot-lead flow can fire
+(function () {
+  try {
+    var saved = JSON.parse(localStorage.getItem('fs_lead') || 'null');
+    if (!saved || !saved.email) return;
+    var now = Date.now();
+    var sinceLead = now - saved.ts;
+    var sinceReturn = now - (saved.lastReturn || 0);
+    if (sinceLead < 30 * 60 * 1000 || sinceReturn < 6 * 3600 * 1000) return;
+    saved.lastReturn = now;
+    localStorage.setItem('fs_lead', JSON.stringify(saved));
+    window._learnq = window._learnq || [];
+    _learnq.push(['identify', { '$email': saved.email }]);
+    _learnq.push(['track', 'Returned To Offer Page', {
+      lead_id: saved.id,
+      hours_since_lead: Math.round(sinceLead / 360000) / 10
+    }]);
+  } catch (err) {}
+})();
+
 function submitLead(e, form) {
   e.preventDefault();
   var card = form.closest('.lead-form-card');
@@ -1091,6 +1206,17 @@ function submitLead(e, form) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Please enter a valid email address.');
   errorEl.style.display = 'none';
   var fullPhone = phoneCode + ' ' + phone;
+  var callTimeEl = form.querySelector('[name=call-time]');
+  var installEl = form.querySelector('[name=install-location]');
+  var callTime = callTimeEl ? callTimeEl.value : '';
+  var installLocation = installEl ? installEl.value : '';
+  var utms = readUtms();
+  var leadId = newLeadId();
+  var lp = {
+    time_s: Math.round(ENG.activeMs / 1000),
+    scroll_pct: ENG.maxScroll,
+    video_pct: ENG.videoPct
+  };
   console.log('[Fitosauna lead]', { name: name, phone: fullPhone, email: email, timestamp: new Date().toISOString() });
   var contactEl = card.querySelector('.lead-contact');
   if (contactEl) contactEl.textContent = email + ' or ' + fullPhone;
@@ -1109,9 +1235,32 @@ function submitLead(e, form) {
     dataLayer.push({
       event: 'specialoffer_form_submit',
       email: email,
-      phone_number: metaPhone
+      phone_number: metaPhone,
+      lead_id: leadId,
+      preferred_call_time: callTime,
+      install_location: installLocation,
+      lp_time_on_page_s: lp.time_s,
+      lp_scroll_pct: lp.scroll_pct,
+      lp_video_watched_pct: lp.video_pct,
+      utm_campaign: utms.utm_campaign || '',
+      utm_content: utms.utm_content || ''
     });
   }
+  // Klaviyo profile properties (queue-safe: replayed when the Klaviyo script loads)
+  window._learnq = window._learnq || [];
+  _learnq.push(['identify', {
+    '$email': email,
+    '$phone_number': e164,
+    'Lead ID': leadId,
+    'Lead Call Time': callTime,
+    'Lead Install Location': installLocation,
+    'LP time on page (s)': lp.time_s,
+    'LP scroll %': lp.scroll_pct,
+    'LP video watched %': lp.video_pct,
+    'Lead UTM campaign': utms.utm_campaign || '',
+    'Lead UTM content': utms.utm_content || ''
+  }]);
+  try { localStorage.setItem('fs_lead', JSON.stringify({ id: leadId, email: email, ts: Date.now() })); } catch (err) {}
 }
 
 // ---- Tap-to-play videos (no native controls) ----
