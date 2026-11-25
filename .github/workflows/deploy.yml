@@ -1,0 +1,74 @@
+name: Deploy to SiteGround
+
+# Copies index.html and assets/ to the SiteGround web folder whenever main changes.
+# It never deletes anything on the server, because files that are not in this repo
+# (for example /api/whatsapp-consent.php) must stay where they are.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: list what would be copied, change nothing"
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-siteground
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SG_HOST: ${{ secrets.SG_HOST }}
+      SG_PORT: ${{ secrets.SG_PORT }}
+      SG_USER: ${{ secrets.SG_USER }}
+      SG_PATH: ${{ secrets.SG_PATH }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        env:
+          SG_SSH_KEY: ${{ secrets.SG_SSH_KEY }}
+          SG_SSH_PASSPHRASE: ${{ secrets.SG_SSH_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          # Trusts the host key SiteGround presents on this run.
+          ssh-keyscan -p "$SG_PORT" -H "$SG_HOST" >> ~/.ssh/known_hosts
+          eval "$(ssh-agent -s)" > /dev/null
+          printf '#!/bin/sh\necho "$SG_SSH_PASSPHRASE"\n' > ~/.ssh/askpass.sh
+          chmod 700 ~/.ssh/askpass.sh
+          printf '%s\n' "$SG_SSH_KEY" | tr -d '\r' \
+            | SSH_ASKPASS="$HOME/.ssh/askpass.sh" SSH_ASKPASS_REQUIRE=force ssh-add - > /dev/null
+          rm -f ~/.ssh/askpass.sh
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+
+      - name: Check the target folder exists
+        run: |
+          set -euo pipefail
+          # Stops here if SG_PATH is wrong, so nothing lands in the wrong place.
+          ssh -p "$SG_PORT" "$SG_USER@$SG_HOST" "test -d '$SG_PATH'" \
+            || { echo "Target folder not found on the server. Check the SG_PATH secret."; exit 1; }
+          echo "Target folder found."
+
+      - name: Copy files
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+        run: |
+          set -euo pipefail
+          # No --delete: server-only files such as api/whatsapp-consent.php stay untouched.
+          # --checksum copies only files whose content changed.
+          rsync -rltvz --checksum --omit-dir-times --no-perms \
+            --chmod=D755,F644 $DRY_RUN \
+            -e "ssh -p $SG_PORT" \
+            index.html assets \
+            "$SG_USER@$SG_HOST:$SG_PATH"
