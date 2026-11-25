@@ -693,27 +693,6 @@
         <label for="email-1">Email</label>
         <input type="email" id="email-1" name="email" placeholder="your@email.com">
       </div>
-      <div>
-        <label for="call-time-1">Best time to call you</label>
-        <select id="call-time-1" name="call-time">
-          <option value="">Select (optional)</option>
-          <option value="Morning (9-12)">Morning (9-12)</option>
-          <option value="Afternoon (12-17)">Afternoon (12-17)</option>
-          <option value="Evening (17-20)">Evening (17-20)</option>
-          <option value="Any time">Any time</option>
-        </select>
-      </div>
-      <div>
-        <label for="install-1">Where will you install it?</label>
-        <select id="install-1" name="install-location">
-          <option value="">Select (optional)</option>
-          <option value="Bathroom">Bathroom</option>
-          <option value="Bedroom / living room">Bedroom / living room</option>
-          <option value="Spare room / home gym">Spare room / home gym</option>
-          <option value="Garage / outbuilding">Garage / outbuilding</option>
-          <option value="Not sure yet">Not sure yet</option>
-        </select>
-      </div>
       <div class="error"></div>
       <button type="submit" class="submit-btn"><span class="desktop-copy">Claim My Offer</span><span class="mobile-copy">Claim My Offer</span></button>
                   <div class="hero-mobile-note">
@@ -897,27 +876,6 @@
         <input type="tel" id="phone-2" name="phone" placeholder="Your phone number" required>
       </div></div>
       <div><label for="email-2">Email</label><input type="email" id="email-2" name="email" placeholder="your@email.com"></div>
-      <div>
-        <label for="call-time-2">Best time to call you</label>
-        <select id="call-time-2" name="call-time">
-          <option value="">Select (optional)</option>
-          <option value="Morning (9-12)">Morning (9-12)</option>
-          <option value="Afternoon (12-17)">Afternoon (12-17)</option>
-          <option value="Evening (17-20)">Evening (17-20)</option>
-          <option value="Any time">Any time</option>
-        </select>
-      </div>
-      <div>
-        <label for="install-2">Where will you install it?</label>
-        <select id="install-2" name="install-location">
-          <option value="">Select (optional)</option>
-          <option value="Bathroom">Bathroom</option>
-          <option value="Bedroom / living room">Bedroom / living room</option>
-          <option value="Spare room / home gym">Spare room / home gym</option>
-          <option value="Garage / outbuilding">Garage / outbuilding</option>
-          <option value="Not sure yet">Not sure yet</option>
-        </select>
-      </div>
       <div class="error"></div>
                   <button type="submit" class="submit-btn">Claim My Offer Now</button>
       <div class="hero-mobile-note">
@@ -1206,10 +1164,6 @@ function submitLead(e, form) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Please enter a valid email address.');
   errorEl.style.display = 'none';
   var fullPhone = phoneCode + ' ' + phone;
-  var callTimeEl = form.querySelector('[name=call-time]');
-  var installEl = form.querySelector('[name=install-location]');
-  var callTime = callTimeEl ? callTimeEl.value : '';
-  var installLocation = installEl ? installEl.value : '';
   var utms = readUtms();
   var leadId = newLeadId();
   var lp = {
@@ -1237,8 +1191,6 @@ function submitLead(e, form) {
       email: email,
       phone_number: metaPhone,
       lead_id: leadId,
-      preferred_call_time: callTime,
-      install_location: installLocation,
       lp_time_on_page_s: lp.time_s,
       lp_scroll_pct: lp.scroll_pct,
       lp_video_watched_pct: lp.video_pct,
@@ -1252,8 +1204,6 @@ function submitLead(e, form) {
     '$email': email,
     '$phone_number': e164,
     'Lead ID': leadId,
-    'Lead Call Time': callTime,
-    'Lead Install Location': installLocation,
     'LP time on page (s)': lp.time_s,
     'LP scroll %': lp.scroll_pct,
     'LP video watched %': lp.video_pct,
